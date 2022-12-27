@@ -9,7 +9,7 @@ class RNN_TextClassification(nn.Module):
         self.input_size = args.max_words
         self.hidden_dim = args.hidden_dim
         self.num_layer = args.num_layer
-        self.dropout = 0.2
+        self.dropout = nn.Dropout(0.5)
 
         self.embedding = nn.Embedding(self.input_size, self.hidden_dim, padding_idx=0)
         self.RNN = nn.RNN(input_size = self.hidden_dim, hidden_size = self.hidden_dim, num_layers = self.num_layer, batch_first = True)
@@ -20,14 +20,14 @@ class RNN_TextClassification(nn.Module):
     def forward(self, x):
 
         h = torch.zeros((self.num_layer, x.size(0), self.hidden_dim))
-        c = torch.zeros((self.num_layer, x.size(0), self.hidden_dim))
+        # c = torch.zeros((self.num_layer, x.size(0), self.hidden_dim))
 
         torch.nn.init.xavier_normal(h)
-        torch.nn.init.xavier_normal(c)
+        # torch.nn.init.xavier_normal(c)
 
         output = self.embedding(x)
 
-        output, (hidden, cell) = self.RNN(output, (h,c))
+        output, hidden = self.RNN(output, h)
 
         output = self.dropout(output)
 

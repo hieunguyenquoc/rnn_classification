@@ -67,8 +67,8 @@ class Execute:
             for x_batch, y_batch in self.load_train:
                 
                 x = x_batch.type(torch.LongTensor)
-                y = y_batch.type(torch.FloatTensor).unsqueeze(1)
-
+                y = y_batch.type(torch.FloatTensor).unsqueeze(1) 
+                
                 y_pred = self.model(x)
 
                 loss = F.binary_cross_entropy(y_pred, y)
@@ -79,10 +79,10 @@ class Execute:
 
                 optimizer.step()
 
-                prediction.append(y_pred.squeeze().detach().numpy())
+                prediction += list((y_pred.squeeze().detach().numpy()))
             
         test_prediction = self.evaluation()
-        torch.save(self.model, "model/RNN_classification.ckpt")
+        #torch.save(self.model, "model/RNN_classification.ckpt")
 
         train_accuracy = self.calculate_accuracy(self.y_train, prediction)
         test_accuracy = self.calculate_accuracy(self.y_test, test_prediction)
@@ -97,10 +97,9 @@ class Execute:
             with torch.no_grad():
                 x = x_batch.type(torch.LongTensor)
                 y = y_batch.type(torch.FloatTensor)
-
                 y_pred = self.model(x)
 
-                prediction.append(y_pred.squeeze().detach().numpy())
+                prediction.append(y_pred.detach().numpy())
             
         return prediction
 
@@ -115,7 +114,7 @@ class Execute:
             elif y < 0.5 and x == 0:
                 true_negative += 1
         
-        return (true_positive + true_negative) / groud_truth
+        return (true_positive + true_negative) / len(groud_truth)
         
 if __name__ == "__main__":
     args = parameter_parser()
